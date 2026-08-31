@@ -221,16 +221,6 @@ you already trust for that. If you want it gone, delete the folder.
 `--claude-code` only ever *reads* your session transcripts — nothing under
 `~/.claude/` is modified, moved, or deleted.
 
-## Roadmap
-
-- Google Gemini export support
-- Tagging and starring, stored alongside the vault
-- Stats: messages over time, busiest days, provider split, longest threads
-- Incremental updates that merge a new export into an existing vault
-- Attachment and image extraction
-
-Ideas and opinions on any of these are welcome.
-
 ## Contributing
 
 Contributions are genuinely welcome — bug reports, fixture files for export formats that
