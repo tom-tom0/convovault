@@ -94,6 +94,9 @@ def _iter_raw_conversations(data: Any) -> list:
             value = data.get(key)
             if isinstance(value, list):
                 return value
+        # A single conversation object on its own.
+        if "chat_messages" in data:
+            return [data]
     return []
 
 

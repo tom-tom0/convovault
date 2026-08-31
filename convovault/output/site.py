@@ -119,10 +119,11 @@ def _build_payload(conversations) -> str:
             records.append(record)
 
     # ensure_ascii keeps the payload pure ASCII (no U+2028/U+2029 hazards);
-    # escaping "</" as "<\/" (a valid JSON escape) means no substring of the
-    # payload can ever terminate the surrounding <script> element.
+    # escaping every "<" as "\\u003c" (a valid JSON escape) means no substring
+    # of the payload can terminate the surrounding <script> element or flip
+    # the HTML parser into a comment/escaped state ("</script", "<!--").
     text = json.dumps(records, ensure_ascii=True, separators=(",", ":"))
-    return text.replace("</", "<\\/")
+    return text.replace("<", "\\u003c")
 
 
 # --------------------------------------------------------------------------
@@ -362,7 +363,9 @@ _JS = """
   });
   data.sort(function (a, b) { return (b._sort - a._sort) || (a._order - b._order); });
 
-  var state = { query: "", provider: "all", selected: data.length ? data[0].id : null };
+  /* Selection is keyed by _order (position in the payload) rather than id,
+     because ids are only unique per provider, not across the whole vault. */
+  var state = { query: "", provider: "all", selected: data.length ? data[0]._order : null };
 
   var searchInput = document.getElementById("search");
   var sidebar = document.getElementById("list");
@@ -495,14 +498,14 @@ _JS = """
       return;
     }
 
-    var stillVisible = results.some(function (c) { return c.id === state.selected; });
-    if (!stillVisible) { state.selected = results[0].id; }
+    var stillVisible = results.some(function (c) { return c._order === state.selected; });
+    if (!stillVisible) { state.selected = results[0]._order; }
 
     results.forEach(function (conv) {
       var item = document.createElement("button");
       item.type = "button";
       item.className = "item";
-      if (conv.id === state.selected) { item.setAttribute("aria-current", "true"); }
+      if (conv._order === state.selected) { item.setAttribute("aria-current", "true"); }
 
       var title = document.createElement("div");
       title.className = "title";
@@ -529,14 +532,14 @@ _JS = """
       }
 
       item.addEventListener("click", function () {
-        state.selected = conv.id;
+        state.selected = conv._order;
         renderList();
         document.getElementById("reader").scrollTop = 0;
       });
       sidebar.appendChild(item);
     });
 
-    var current = results.filter(function (c) { return c.id === state.selected; })[0];
+    var current = results.filter(function (c) { return c._order === state.selected; })[0];
     renderReader(current || null, query);
   }
 
@@ -634,6 +637,10 @@ _HTML_TEMPLATE = """<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
 <title>ConvoVault</title>
 <style>%(css)s</style>
 </head>

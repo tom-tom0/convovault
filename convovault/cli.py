@@ -156,12 +156,13 @@ def _load_json(path: Path, label: str) -> object | None:
 def _detect_provider(data: object) -> str | None:
     """Guess the provider from the shape of a parsed export.
 
-    A list of conversations whose first entry carries a ``mapping`` is a
-    ChatGPT export; one carrying ``chat_messages`` is a Claude export. Some
-    exports wrap the list in an object, so that shape is unwrapped first.
+    A list of conversations carrying a ``mapping`` is a ChatGPT export; one
+    carrying ``chat_messages`` is a Claude export. Some exports wrap the list
+    in an object, so that shape is unwrapped first. Every entry is scanned so
+    a leading unrecognized entry cannot hide an otherwise valid export.
     """
     if isinstance(data, dict):
-        for key in ("conversations", "chats", "data"):
+        for key in ("conversations", "chats", "items", "data"):
             nested = data.get(key)
             if isinstance(nested, list):
                 data = nested
@@ -179,7 +180,6 @@ def _detect_provider(data: object) -> str | None:
             return "chatgpt"
         if "chat_messages" in entry:
             return "claude"
-        return None
     return None
 
 

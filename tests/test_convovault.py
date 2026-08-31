@@ -385,6 +385,79 @@ def test_cli_is_idempotent_and_does_not_duplicate(tmp_path):
     assert len(_md_files(out)) == 4
 
 
+def test_claude_single_conversation_object_parses(tmp_path):
+    """A bare single-conversation object (no list wrapper) still parses."""
+    raw = json.loads(CLAUDE_FIXTURE.read_text(encoding="utf-8"))[0]
+    path = tmp_path / "conversations.json"
+    path.write_text(json.dumps(raw), encoding="utf-8")
+
+    convs = _parse(claude, path)
+    assert len(convs) == 1
+    assert convs[0].id == "claude-conv-0001"
+    assert len(convs[0].messages) == 3
+
+
+def test_write_site_neutralises_comment_opener(tmp_path):
+    """'<!--' plus '<script' in a message cannot derail the HTML parser."""
+    hostile = Conversation(
+        id="hostile-2",
+        title="Comment trick",
+        provider="chatgpt",
+        created_at=10.0,
+        updated_at=20.0,
+        messages=[
+            Message(role="user", text="COMMENTHEAD <!--<script>COMMENTTAIL", timestamp=10.0)
+        ],
+    )
+    index = _write_site([hostile], tmp_path / "hostile2")
+    html = index.read_text(encoding="utf-8")
+
+    assert "COMMENTHEAD" in html
+    assert "COMMENTTAIL" in html
+    # No literal '<' from message text survives into the embedded payload.
+    assert "<!--<script>" not in html
+
+
+def test_write_site_hardening_headers(tmp_path):
+    """The page carries CSP, no-referrer, and noindex meta tags."""
+    convs = _parse(claude, CLAUDE_FIXTURE)
+    html = _write_site(convs, tmp_path / "hard").read_text(encoding="utf-8")
+
+    assert "Content-Security-Policy" in html
+    assert "default-src 'none'" in html
+    assert 'name="referrer" content="no-referrer"' in html
+    assert "noindex" in html
+
+
+def test_cli_reads_zip_export(tmp_path):
+    """A zip with conversations.json nested inside imports like the raw file."""
+    import zipfile
+
+    archive = tmp_path / "claude-export.zip"
+    with zipfile.ZipFile(archive, "w") as zf:
+        zf.write(CLAUDE_FIXTURE, "export-2026/conversations.json")
+    out = tmp_path / "vault"
+
+    assert _run_cli([str(archive), "-o", str(out)]) == 0
+    files = _md_files(out)
+    assert len(files) == 2
+    blob = "\n".join(f.read_text(encoding="utf-8") for f in files)
+    assert "Trip packing checklist" in blob
+
+
+def test_cli_reads_directory_input(tmp_path):
+    """A directory containing conversations.json somewhere inside works."""
+    nested = tmp_path / "export" / "data"
+    nested.mkdir(parents=True)
+    (nested / "conversations.json").write_text(
+        CHATGPT_FIXTURE.read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    out = tmp_path / "vault"
+
+    assert _run_cli([str(tmp_path / "export"), "-o", str(out)]) == 0
+    assert len(_md_files(out)) == 2
+
+
 def test_cli_survives_malformed_input(tmp_path):
     """A junk export alongside a good one does not abort the whole run."""
     junk = tmp_path / "broken.json"

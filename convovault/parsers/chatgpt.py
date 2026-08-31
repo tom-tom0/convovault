@@ -78,7 +78,7 @@ def _as_conversation_list(raw: Any) -> list[Any]:
         return raw
     if isinstance(raw, dict):
         # Some exports wrap the list, e.g. {"conversations": [...]}.
-        for key in ("conversations", "items", "data"):
+        for key in ("conversations", "chats", "items", "data"):
             value = raw.get(key)
             if isinstance(value, list):
                 return value

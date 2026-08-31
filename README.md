@@ -1,5 +1,12 @@
 # ConvoVault
 
+> **What is this?** ConvoVault is a small command-line tool for your own chat history.
+> You download your data export from ChatGPT and/or Claude (a zip file each service
+> gives you on request), point ConvoVault at it, and it turns everything into a tidy
+> folder on your computer: one easy-to-read text file per conversation, plus a single
+> `index.html` page you double-click to search all of your conversations at once.
+> It works completely offline and never sends your data anywhere.
+
 **One private, offline archive for all your ChatGPT and Claude conversations.**
 
 ConvoVault takes the data exports you download from ChatGPT and Claude and turns them
@@ -39,7 +46,7 @@ better than a zip file in your Downloads folder.
 
 - **Two providers, one archive** — ChatGPT and Claude exports merged into a single
   chronological vault, each conversation tagged with where it came from.
-- **Readable Markdown** — one file per conversation, with a YAML-ish front matter header
+- **Readable Markdown** — one file per conversation, with a metadata header
   (title, provider, dates) and speaker-labelled turns. Plain text, forever readable.
 - **Self-contained search page** — `index.html` with instant full-text search and
   provider filtering. One file, no build step, no CDN, no internet. Double-click it.
@@ -152,8 +159,11 @@ search page works with no web server, no network, and no other files but itself.
 **Everything stays on your machine.** ConvoVault makes no network requests of any kind —
 it reads local files and writes local files, and that is the whole of it. The generated
 `index.html` embeds your conversations directly and loads no external scripts, fonts, or
-styles, so opening it sends nothing anywhere. There is no telemetry, no analytics, no
-"anonymous usage data", no update check.
+styles, so opening it sends nothing anywhere. It also ships a strict Content-Security-Policy
+that forbids the page from making any network request at all, marks itself `noindex` so
+search engines would ignore it even if it were ever accidentally uploaded somewhere, and
+sends no referrer. There is no telemetry, no analytics, no "anonymous usage data", no
+update check.
 
 The vault is ordinary files on disk. If you want it encrypted or backed up, use the tools
 you already trust for that. If you want it gone, delete the folder.
