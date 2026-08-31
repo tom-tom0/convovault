@@ -5,9 +5,11 @@
 > gives you on request), point ConvoVault at it, and it turns everything into a tidy
 > folder on your computer: one easy-to-read text file per conversation, plus a single
 > `index.html` page you double-click to search all of your conversations at once.
-> It works completely offline and never sends your data anywhere.
+> If you use the Claude Code terminal, it can also pull in your coding sessions
+> directly from your disk — no export needed. It works completely offline and never
+> sends your data anywhere.
 
-**One private, offline archive for all your ChatGPT and Claude conversations.**
+**One private, offline archive for all your ChatGPT, Claude, and Claude Code conversations.**
 
 ConvoVault takes the data exports you download from ChatGPT and Claude and turns them
 into a single searchable vault on your own machine: clean Markdown files you can read,
@@ -17,7 +19,7 @@ your file browser.
 No account. No server. No dependencies. Nothing ever leaves your computer.
 
 ```
-convovault chatgpt-export.zip claude-export.zip -o my-vault
+convovault chatgpt-export.zip claude-export.zip --claude-code -o my-vault
 ```
 
 ---
@@ -44,8 +46,13 @@ better than a zip file in your Downloads folder.
 
 ## Features
 
-- **Two providers, one archive** — ChatGPT and Claude exports merged into a single
-  chronological vault, each conversation tagged with where it came from.
+- **Three sources, one archive** — ChatGPT exports, Claude exports, and local Claude
+  Code sessions merged into a single chronological vault, each conversation tagged
+  with where it came from.
+- **Claude Code sessions with zero waiting** — your terminal sessions are already on
+  your disk, so `--claude-code` archives them instantly: no export request, no email,
+  no zip. Tool calls, thinking, and other machinery are filtered out, leaving the
+  readable back-and-forth.
 - **Readable Markdown** — one file per conversation, with a metadata header
   (title, provider, dates) and speaker-labelled turns. Plain text, forever readable.
 - **Self-contained search page** — `index.html` with instant full-text search and
@@ -72,6 +79,46 @@ better than a zip file in your Downloads folder.
 3. Save the `.zip` — again, no need to unpack it.
 
 Both archives contain a `conversations.json`; ConvoVault reads it out of the zip for you.
+
+**Claude Code** needs no export at all — see the next section.
+
+## Claude Code sessions
+
+If you use [Claude Code](https://claude.com/claude-code) (Anthropic's terminal agent),
+every session you have ever run is already stored on your machine, as one `.jsonl`
+transcript per session under `~/.claude/projects/`. ConvoVault reads them in place:
+
+```bash
+# archive every local Claude Code session
+convovault --claude-code -o my-vault
+
+# combine with your exports for one vault across everything
+convovault chatgpt-export.zip claude-export.zip --claude-code -o my-vault
+
+# transcripts stored somewhere unusual? point at the directory
+convovault --claude-code /path/to/projects -o my-vault
+
+# or pass a single session transcript directly
+convovault ~/.claude/projects/-home-me-myrepo/3f2a…d1.jsonl -o my-vault
+```
+
+What you get out of a session is the conversation you actually had: your messages and
+Claude's replies. The machinery in between — tool calls and their output, file reads,
+internal "thinking" blocks, injected system context — is filtered out. Sessions have
+no stored name, so each one is titled after the first thing you typed in it.
+
+Worth knowing:
+
+- **Re-running is safe and incremental.** Sessions keep a stable id, so rebuilding
+  the vault after more work simply refreshes them — updated sessions replace their
+  older copies instead of duplicating.
+- **The transcript format is Claude Code's internal storage**, not a documented
+  export format, so a future Claude Code release could change it. ConvoVault fails
+  soft: if the shape changes, affected records are skipped with the rest of the run
+  intact — please open an issue with a scrubbed sample if that happens to you.
+- Sessions read as more staccato than chats — several Claude turns can follow each
+  other as it narrates its work between (filtered-out) tool calls. That is faithful
+  to the session, not a bug.
 
 ## Install
 
@@ -104,6 +151,9 @@ convovault chatgpt-export.zip -o my-vault
 
 # already unpacked? pass the JSON directly
 convovault ~/exports/chatgpt/conversations.json -o my-vault
+
+# add your local Claude Code sessions to any of the above
+convovault chatgpt-export.zip --claude-code -o my-vault
 
 # defaults to ./vault if you omit -o
 convovault chatgpt-export.zip
@@ -168,6 +218,9 @@ update check.
 The vault is ordinary files on disk. If you want it encrypted or backed up, use the tools
 you already trust for that. If you want it gone, delete the folder.
 
+`--claude-code` only ever *reads* your session transcripts — nothing under
+`~/.claude/` is modified, moved, or deleted.
+
 ## Roadmap
 
 - Google Gemini export support
@@ -175,6 +228,8 @@ you already trust for that. If you want it gone, delete the folder.
 - Stats: messages over time, busiest days, provider split, longest threads
 - Incremental updates that merge a new export into an existing vault
 - Attachment and image extraction
+
+Done: ~~Claude Code session support~~ (v0.2.0, `--claude-code`).
 
 Ideas and opinions on any of these are welcome.
 

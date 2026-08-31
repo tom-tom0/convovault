@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "convovault"
-version = "0.1.0"
-description = "Turn your ChatGPT and Claude data exports into one private, searchable, offline archive."
+version = "0.2.0"
+description = "Turn your ChatGPT and Claude data exports - and local Claude Code sessions - into one private, searchable, offline archive."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "tom-tom0" }]
 maintainers = [{ name = "tom-tom0" }]
-keywords = ["chatgpt", "claude", "archive", "export", "markdown", "offline", "cli"]
+keywords = ["chatgpt", "claude", "claude-code", "archive", "export", "markdown", "offline", "cli"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",

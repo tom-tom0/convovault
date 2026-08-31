@@ -150,6 +150,7 @@ _CSS = """
   --mark-text: #2a2100;
   --badge-chatgpt: #10a37f;
   --badge-claude: #c96442;
+  --badge-claude-code: #7056c9;
   --badge-other: #6b7280;
 }
 @media (prefers-color-scheme: dark) {
@@ -167,6 +168,7 @@ _CSS = """
     --mark-text: #ffeeb8;
     --badge-chatgpt: #16b58c;
     --badge-claude: #e0794f;
+    --badge-claude-code: #937ee6;
     --badge-other: #808a99;
   }
 }
@@ -281,6 +283,7 @@ main { flex: 1; display: flex; min-height: 0; }
 }
 .badge.chatgpt { background: var(--badge-chatgpt); }
 .badge.claude { background: var(--badge-claude); }
+.badge.claude-code { background: var(--badge-claude-code); }
 #reader { flex: 1; overflow-y: auto; padding: 20px 24px 48px; min-width: 0; }
 #reader-head {
   max-width: 820px;
@@ -343,7 +346,8 @@ _JS = """
   "use strict";
 
   var DEBOUNCE_MS = 150;
-  var PROVIDER_NAMES = { chatgpt: "ChatGPT", claude: "Claude" };
+  var PROVIDER_NAMES = { chatgpt: "ChatGPT", claude: "Claude", "claude-code": "Claude Code" };
+  var BADGE_CLASSES = ["chatgpt", "claude", "claude-code"];
 
   var data = [];
   try {
@@ -391,7 +395,7 @@ _JS = """
   function badge(provider) {
     var key = String(provider || "").toLowerCase();
     var el = document.createElement("span");
-    el.className = "badge" + (key === "chatgpt" || key === "claude" ? " " + key : "");
+    el.className = "badge" + (BADGE_CLASSES.indexOf(key) !== -1 ? " " + key : "");
     el.textContent = providerName(key);
     return el;
   }
@@ -657,6 +661,7 @@ _HTML_TEMPLATE = """<!DOCTYPE html>
     <button type="button" data-provider="all" aria-pressed="true">All</button>
     <button type="button" data-provider="chatgpt" aria-pressed="false">ChatGPT</button>
     <button type="button" data-provider="claude" aria-pressed="false">Claude</button>
+    <button type="button" data-provider="claude-code" aria-pressed="false">Claude Code</button>
   </div>
 </header>
 <main>

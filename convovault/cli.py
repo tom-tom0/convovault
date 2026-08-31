@@ -22,7 +22,7 @@ from typing import Iterable, Sequence
 from .models import Conversation
 from .output.markdown import write_markdown
 from .output.site import write_site
-from .parsers import chatgpt, claude
+from .parsers import chatgpt, claude, claude_code
 
 __all__ = ["main"]
 
@@ -30,7 +30,10 @@ __all__ = ["main"]
 EXPORT_FILENAME = "conversations.json"
 
 #: provider name -> module exposing ``parse(path) -> list[Conversation]``
-PARSERS = {"chatgpt": chatgpt, "claude": claude}
+PARSERS = {"chatgpt": chatgpt, "claude": claude, "claude-code": claude_code}
+
+#: Where Claude Code keeps its local session transcripts.
+CLAUDE_CODE_ROOT = Path("~/.claude/projects")
 
 
 # --------------------------------------------------------------------------- #
@@ -139,6 +142,39 @@ def _resolve_input(raw: str, stack: contextlib.ExitStack) -> tuple[str, Path] | 
     return raw, path
 
 
+def _find_claude_code_sessions(root: Path) -> list[Path]:
+    """Return every ``<project>/<session>.jsonl`` transcript under *root*."""
+    return sorted(path for path in root.glob("*/*.jsonl") if path.is_file())
+
+
+def _collect_claude_code(root_arg: str) -> list[Conversation]:
+    """Parse every Claude Code session under the given (or default) root.
+
+    *root_arg* is the value of ``--claude-code``: an explicit directory, or
+    the empty string meaning the default ``~/.claude/projects``. A missing
+    root or an unparseable session warns and is skipped, never fatal.
+    """
+    root = (Path(root_arg) if root_arg else CLAUDE_CODE_ROOT).expanduser()
+    if not root.is_dir():
+        _warn(f"{root}: Claude Code projects directory not found; skipping")
+        return []
+
+    sessions = _find_claude_code_sessions(root)
+    if not sessions:
+        _warn(f"{root}: no Claude Code session transcripts (*.jsonl) found; skipping")
+        return []
+
+    collected: list[Conversation] = []
+    for path in sessions:
+        try:
+            parsed = claude_code.parse(path)
+        except Exception as exc:  # defensive: one bad session must not abort the run
+            _warn(f"{path}: claude-code parser failed ({exc}); skipping")
+            continue
+        collected.extend(item for item in parsed if isinstance(item, Conversation))
+    return collected
+
+
 # --------------------------------------------------------------------------- #
 # provider sniffing
 # --------------------------------------------------------------------------- #
@@ -231,17 +267,20 @@ def _collect(inputs: Sequence[str], stack: contextlib.ExitStack) -> list[Convers
             continue
         seen_paths.add(real)
 
-        data = _load_json(json_path, label)
-        if data is None:
-            continue
-
-        provider = _detect_provider(data)
-        if provider is None:
-            _warn(
-                f"{label}: unrecognized export format "
-                f"(expected a ChatGPT or Claude {EXPORT_FILENAME}); skipping"
-            )
-            continue
+        if json_path.suffix.lower() == ".jsonl":
+            # A Claude Code session transcript passed directly as an input.
+            provider = claude_code.PROVIDER
+        else:
+            data = _load_json(json_path, label)
+            if data is None:
+                continue
+            provider = _detect_provider(data)
+            if provider is None:
+                _warn(
+                    f"{label}: unrecognized export format "
+                    f"(expected a ChatGPT or Claude {EXPORT_FILENAME}); skipping"
+                )
+                continue
 
         parser = PARSERS[provider]
         try:
@@ -286,14 +325,27 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
         epilog=(
             "Each INPUT may be a conversations.json file, a directory "
-            "containing one, or an export .zip archive."
+            "containing one, an export .zip archive, or a Claude Code "
+            "session .jsonl transcript."
         ),
     )
     parser.add_argument(
         "inputs",
         metavar="INPUT",
-        nargs="+",
-        help="export file, directory, or .zip to import",
+        nargs="*",
+        help="export file, directory, .zip, or session .jsonl to import",
+    )
+    parser.add_argument(
+        "--claude-code",
+        nargs="?",
+        const="",
+        default=None,
+        metavar="DIR",
+        help=(
+            "also import your local Claude Code session transcripts "
+            "(default location: ~/.claude/projects; pass DIR to read "
+            "another location)"
+        ),
     )
     parser.add_argument(
         "-o",
@@ -323,14 +375,20 @@ def _build_parser() -> argparse.ArgumentParser:
 
 def main(argv: Sequence[str] | None = None) -> int:
     """Run the CLI. Returns 0 on success, 1 when nothing could be imported."""
-    args = _build_parser().parse_args(argv)
+    parser = _build_parser()
+    args = parser.parse_args(argv)
+    if not args.inputs and args.claude_code is None:
+        parser.error("at least one INPUT or --claude-code is required")
 
     def say(message: str = "") -> None:
         if not args.quiet:
             print(message)
 
     with contextlib.ExitStack() as stack:
-        conversations = _merge(_collect(args.inputs, stack))
+        collected = _collect(args.inputs, stack)
+    if args.claude_code is not None:
+        collected.extend(_collect_claude_code(args.claude_code))
+    conversations = _merge(collected)
 
     if not conversations:
         print(

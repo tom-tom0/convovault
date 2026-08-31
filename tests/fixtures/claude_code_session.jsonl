@@ -1,0 +1,12 @@
+{"type": "summary", "summary": "Debugging a flaky test", "leafUuid": "leaf-1"}
+{"type": "user", "isMeta": true, "sessionId": "cc-sess-0001", "timestamp": "2026-08-31T10:00:00.000Z", "message": {"role": "user", "content": "Caveat: injected context the user never typed"}}
+{"type": "user", "sessionId": "cc-sess-0001", "timestamp": "2026-08-31T10:00:05.000Z", "message": {"role": "user", "content": "<command-name>/help</command-name>"}}
+{"type": "user", "sessionId": "cc-sess-0001", "timestamp": "2026-08-31T10:00:10.000Z", "message": {"role": "user", "content": "my pytest suite fails only on CI with a timezone error, can you find why?"}}
+{"type": "assistant", "sessionId": "cc-sess-0001", "timestamp": "2026-08-31T10:00:20.000Z", "message": {"role": "assistant", "content": [{"type": "thinking", "thinking": "internal reasoning that must never be archived"}, {"type": "text", "text": "Let me look at the failing test first."}]}}
+{"type": "assistant", "sessionId": "cc-sess-0001", "timestamp": "2026-08-31T10:00:25.000Z", "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "tu-1", "name": "Bash", "input": {"command": "pytest -x"}}]}}
+{"type": "user", "sessionId": "cc-sess-0001", "timestamp": "2026-08-31T10:00:30.000Z", "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "tu-1", "content": "1 failed: TestTimestamps::test_local_midnight"}]}}
+{"type": "assistant", "sessionId": "cc-sess-0001", "timestamp": "2026-08-31T10:01:00.000Z", "message": {"role": "assistant", "content": [{"type": "text", "text": "Found it: the test builds a datetime without tzinfo, so it depends on the machine timezone."}, {"type": "text", "text": "CI runs in UTC; your laptop does not. Pin the test to UTC and it will pass everywhere."}]}}
+not valid json at all
+{"type": "user", "sessionId": "cc-sess-0001", "timestamp": "2026-08-31T10:02:00.000Z", "message": {"role": "user", "content": [{"type": "text", "text": "makes sense, fix it please"}]}}
+{"unrecognized": "record shape"}
+{"type": "assistant", "sessionId": "cc-sess-0001", "timestamp": "2026-08-31T10:02:30.000Z", "message": {"role": "assistant", "content": [{"type": "text", "text": "Done - the test now uses timezone.utc explicitly and passes locally and on CI."}]}}

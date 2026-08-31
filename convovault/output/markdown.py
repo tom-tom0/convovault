@@ -21,6 +21,7 @@ _PROVIDER_NAMES = {
     "chatgpt": "ChatGPT",
     "openai": "OpenAI",
     "claude": "Claude",
+    "claude-code": "Claude Code",
     "anthropic": "Anthropic",
 }
 
