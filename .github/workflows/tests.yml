@@ -17,5 +17,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: python -m pip install pytest
-      - run: python -m pytest tests/ -q
+      - run: python -m pip install pytest coverage
+      - run: python -m coverage run --branch --source=convovault -m pytest tests/ -q
+      - run: python -m coverage report -m --fail-under=100

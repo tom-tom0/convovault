@@ -172,10 +172,12 @@ def write_markdown(conversations, out_dir) -> list[pathlib.Path]:
     used_names: set[str] = set()
 
     for conversation in conversations or []:
-        # Anything that is not conversation-shaped is not worth a file.
-        if not hasattr(conversation, "messages") and not hasattr(conversation, "id"):
-            continue
         try:
+            # Anything that is not conversation-shaped is not worth a file.
+            # (Inside the try: attribute access on exotic objects can raise
+            # things hasattr does not swallow.)
+            if not hasattr(conversation, "messages") and not hasattr(conversation, "id"):
+                continue
             stem = "-".join(
                 (
                     _format_date(getattr(conversation, "created_at", None)),
@@ -185,8 +187,9 @@ def write_markdown(conversations, out_dir) -> list[pathlib.Path]:
             )
             path = directory / _unique_name(stem, used_names)
             path.write_text(_render(conversation), encoding="utf-8", newline="\n")
-        except (OSError, AttributeError, TypeError, ValueError):
-            # Skip this conversation; the rest of the archive still gets built.
+        except Exception:
+            # Skip this conversation, whatever went wrong; the rest of the
+            # archive still gets built.
             continue
         written.append(path)
 

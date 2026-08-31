@@ -114,7 +114,11 @@ def _build_payload(conversations) -> str:
     """Serialise conversations to a string safe to inline in an HTML script."""
     records = []
     for index, conversation in enumerate(conversations or []):
-        record = _conversation_to_dict(conversation, index)
+        try:
+            record = _conversation_to_dict(conversation, index)
+        except Exception:
+            # Even attribute access can raise on exotic objects; skip them.
+            record = None
         if record is not None:
             records.append(record)
 
