@@ -1,0 +1,81 @@
+[
+  {
+    "uuid": "claude-conv-0001",
+    "name": "Trip packing checklist",
+    "created_at": "2026-08-10T09:15:00.123456Z",
+    "updated_at": "2026-08-10T09:20:30.000000Z",
+    "account": {"uuid": "acct-0000"},
+    "chat_messages": [
+      {
+        "uuid": "msg-0001",
+        "text": "Help me make a packing list for a 3-day hiking trip.",
+        "sender": "human",
+        "created_at": "2026-08-10T09:15:00.123456Z",
+        "updated_at": "2026-08-10T09:15:00.123456Z",
+        "content": [
+          {"type": "text", "text": "Help me make a packing list for a 3-day hiking trip."}
+        ],
+        "attachments": [],
+        "files": []
+      },
+      {
+        "uuid": "msg-0002",
+        "text": "",
+        "sender": "assistant",
+        "created_at": "2026-08-10T09:15:20.000000Z",
+        "updated_at": "2026-08-10T09:15:20.000000Z",
+        "content": [
+          {"type": "text", "text": "Here's a solid 3-day list: tent, sleeping bag rated for the season, 2L of water capacity, headlamp, first-aid kit, and layers rather than bulk."},
+          {"type": "text", "text": "Want me to tailor it for the weather forecast?"}
+        ],
+        "attachments": [],
+        "files": []
+      },
+      {
+        "uuid": "msg-0003",
+        "text": "Yes please, it will be rainy.",
+        "sender": "human",
+        "created_at": "2026-08-10T09:20:30.000000Z",
+        "updated_at": "2026-08-10T09:20:30.000000Z",
+        "content": [
+          {"type": "text", "text": "Yes please, it will be rainy."}
+        ],
+        "attachments": [],
+        "files": []
+      }
+    ]
+  },
+  {
+    "uuid": "claude-conv-0002",
+    "name": "",
+    "created_at": "2026-08-20T18:00:00.000000Z",
+    "updated_at": "2026-08-20T18:01:00.000000Z",
+    "account": {"uuid": "acct-0000"},
+    "chat_messages": [
+      {
+        "uuid": "msg-0004",
+        "text": "What rhymes with orange?",
+        "sender": "human",
+        "created_at": "2026-08-20T18:00:00.000000Z",
+        "updated_at": "2026-08-20T18:00:00.000000Z",
+        "content": [
+          {"type": "text", "text": "What rhymes with orange?"}
+        ],
+        "attachments": [],
+        "files": []
+      },
+      {
+        "uuid": "msg-0005",
+        "text": "",
+        "sender": "assistant",
+        "created_at": "2026-08-20T18:01:00.000000Z",
+        "updated_at": "2026-08-20T18:01:00.000000Z",
+        "content": [
+          {"type": "text", "text": "Almost nothing rhymes perfectly with orange — \"sporange\" (a botanical term) is the classic half-serious answer."}
+        ],
+        "attachments": [],
+        "files": []
+      }
+    ]
+  }
+]

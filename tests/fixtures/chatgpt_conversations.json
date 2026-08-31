@@ -1,0 +1,130 @@
+[
+  {
+    "title": "Sourdough starter help",
+    "create_time": 1755000000.0,
+    "update_time": 1755000300.5,
+    "mapping": {
+      "root-1": {
+        "id": "root-1",
+        "message": null,
+        "parent": null,
+        "children": ["node-sys-1"]
+      },
+      "node-sys-1": {
+        "id": "node-sys-1",
+        "message": {
+          "id": "node-sys-1",
+          "author": {"role": "system", "name": null, "metadata": {}},
+          "create_time": null,
+          "content": {"content_type": "text", "parts": [""]},
+          "metadata": {"is_visually_hidden_from_conversation": true}
+        },
+        "parent": "root-1",
+        "children": ["node-u1"]
+      },
+      "node-u1": {
+        "id": "node-u1",
+        "message": {
+          "id": "node-u1",
+          "author": {"role": "user", "name": null, "metadata": {}},
+          "create_time": 1755000000.0,
+          "content": {"content_type": "text", "parts": ["My sourdough starter smells like acetone. Is it dead?"]},
+          "metadata": {}
+        },
+        "parent": "node-sys-1",
+        "children": ["node-a1-old", "node-a1"]
+      },
+      "node-a1-old": {
+        "id": "node-a1-old",
+        "message": {
+          "id": "node-a1-old",
+          "author": {"role": "assistant", "name": null, "metadata": {}},
+          "create_time": 1755000010.0,
+          "content": {"content_type": "text", "parts": ["This is an earlier regenerated answer that should NOT appear in the archive."]},
+          "metadata": {}
+        },
+        "parent": "node-u1",
+        "children": []
+      },
+      "node-a1": {
+        "id": "node-a1",
+        "message": {
+          "id": "node-a1",
+          "author": {"role": "assistant", "name": null, "metadata": {}},
+          "create_time": 1755000020.0,
+          "content": {"content_type": "text", "parts": ["Not dead! An acetone smell means it's hungry. Feed it twice daily at 1:1:1 and it should recover within a few days."]},
+          "metadata": {}
+        },
+        "parent": "node-u1",
+        "children": ["node-u2"]
+      },
+      "node-u2": {
+        "id": "node-u2",
+        "message": {
+          "id": "node-u2",
+          "author": {"role": "user", "name": null, "metadata": {}},
+          "create_time": 1755000200.0,
+          "content": {"content_type": "text", "parts": ["Great, what ratio is 1:1:1 exactly?"]},
+          "metadata": {}
+        },
+        "parent": "node-a1",
+        "children": ["node-a2"]
+      },
+      "node-a2": {
+        "id": "node-a2",
+        "message": {
+          "id": "node-a2",
+          "author": {"role": "assistant", "name": null, "metadata": {}},
+          "create_time": 1755000300.5,
+          "content": {"content_type": "text", "parts": ["Equal parts by weight: starter, flour, and water. For example 50g of each."]},
+          "metadata": {}
+        },
+        "parent": "node-u2",
+        "children": []
+      }
+    },
+    "current_node": "node-a2",
+    "conversation_id": "cgpt-conv-0001",
+    "id": "cgpt-conv-0001"
+  },
+  {
+    "title": "Python list comprehension",
+    "create_time": 1756100000.0,
+    "update_time": 1756100050.0,
+    "mapping": {
+      "root-2": {
+        "id": "root-2",
+        "message": null,
+        "parent": null,
+        "children": ["node-b1"]
+      },
+      "node-b1": {
+        "id": "node-b1",
+        "message": {
+          "id": "node-b1",
+          "author": {"role": "user", "name": null, "metadata": {}},
+          "create_time": 1756100000.0,
+          "content": {"content_type": "text", "parts": ["Show me how to square even numbers from a list in one line of Python."]},
+          "metadata": {}
+        },
+        "parent": "root-2",
+        "children": ["node-b2"]
+      },
+      "node-b2": {
+        "id": "node-b2",
+        "message": {
+          "id": "node-b2",
+          "author": {"role": "assistant", "name": null, "metadata": {}},
+          "create_time": 1756100050.0,
+          "content": {"content_type": "code", "language": "python", "text": "squares = [n * n for n in nums if n % 2 == 0]"},
+          "metadata": {}
+        },
+        "parent": "node-b1",
+        "children": []
+      }
+    },
+    "current_node": "node-b2",
+    "conversation_id": "cgpt-conv-0002",
+    "id": "cgpt-conv-0002"
+  }
+]

@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "convovault"
+version = "0.1.0"
+description = "Turn your ChatGPT and Claude data exports into one private, searchable, offline archive."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "tom-tom0" }]
+maintainers = [{ name = "tom-tom0" }]
+keywords = ["chatgpt", "claude", "archive", "export", "markdown", "offline", "cli"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Utilities",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/tom-tom0/convovault"
+Repository = "https://github.com/tom-tom0/convovault"
+Issues = "https://github.com/tom-tom0/convovault/issues"
+
+[project.scripts]
+convovault = "convovault.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["convovault", "convovault.parsers", "convovault.output"]
