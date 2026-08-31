@@ -128,7 +128,9 @@ def _unique_name(stem: str, used: set[str]) -> str:
 def _render(conversation) -> str:
     """Build the full Markdown document for one conversation."""
     provider = getattr(conversation, "provider", "")
-    title = _as_text(getattr(conversation, "title", "")).strip() or "Untitled conversation"
+    # Collapse all whitespace runs (newlines included) so the title is always
+    # exactly one heading line in the rendered document.
+    title = " ".join(_as_text(getattr(conversation, "title", "")).split()) or "Untitled conversation"
     messages = list(getattr(conversation, "messages", None) or [])
 
     lines: list[str] = [f"# {title}", ""]
