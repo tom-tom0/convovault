@@ -229,8 +229,6 @@ you already trust for that. If you want it gone, delete the folder.
 - Incremental updates that merge a new export into an existing vault
 - Attachment and image extraction
 
-Done: ~~Claude Code session support~~ (v0.2.0, `--claude-code`).
-
 Ideas and opinions on any of these are welcome.
 
 ## Contributing
